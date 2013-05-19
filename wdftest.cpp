@@ -32,7 +32,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 int main(){ 
 	T Fs = 48000.0;
-	T N = Fs*1.0;
+	T N = Fs*10.0;
 	T gain = 2.0;
 	T f0 = 1001.0;
 	T *input = new T[(int)N];
@@ -130,7 +130,7 @@ int main(){
 		//Step 4: output 
 		//DUMP(printf("%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t%.2f\t: %.4f\t%.4f\t%.4f a:%.2f: %.2f b:%.2f: %.2f\n",j/Fs, input[j], Ro.Voltage(), I1.Voltage(),I3.Voltage(),P2.Voltage(),Ri.Voltage(),Rk.Voltage(),Rg.Voltage(),E.Voltage(),Co.Voltage(), Ck.Voltage(), E.Current(), Ro.Current(), v.G.Current(),v.K.Current(),v.P.Current(),v.P.WD,P2.WU, v.P.WU,P2.WD));
 		//DUMP(printf("+%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\n", j/Fs, input[j], Ro.Voltage(),v.vg,v.vk,v.vp,Ri.Voltage(),Rk.Voltage(),Rg.Voltage(),E.Voltage(),Co.Voltage(), Ck.Voltage(), E.Current(), Ro.Current(), v.G.Current(),v.K.Current(),v.P.Current()));
-        DUMP(printf("%f\n", Ro.Voltage()/250.0));
+        //DUMP(printf("%f\n", Ro.Voltage()/250.0));
 		
 		//Step 5: push new waves down from the triode element
 		P2.setWD(v.P.WU); 

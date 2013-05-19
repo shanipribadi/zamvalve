@@ -142,6 +142,7 @@ public:
 		v.e = v.e1 + (v.e2-v.e1)*tubetone;
 		v.cg = v.cg1 + (v.cg2-v.cg1)*tubetone;
 		v.ig0 = v.ig01 + (v.ig02-v.ig01)*tubetone;
+        v.init();
 
 		for (uint32_t i = 0; i < nframes; ++i) {
 
