@@ -201,13 +201,13 @@ T V::waveUp() {
 
 inline T _exp(const T x)
 {
-    return 1.0 + x + x*x/2.0 + x*x*x/6.0 + x*x*x*x/24.0 + x*x*x*x*x/120.0;
+    return 1.0 + x + x*x/2.0 + x*x*x/6.0 + x*x*x*x/24.0 + x*x*x*x*x/120.0
+        + x*x*x*x*x*x/720.0 + x*x*x*x*x*x*x/5040.0 + x*x*x*x*x*x*x*x/40320.0;
 }
 
 inline T _log(const T x)
 {
-    const T a=(x-1)/(x+1);
-    return 2*(a+1/3*a*a*a+1/5*a*a*a*a*a);
+    return log(x);
 }
 
 inline T _pow(const T a, const T b)
