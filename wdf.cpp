@@ -223,7 +223,7 @@ inline T _pow(const T a, const T b)
 
 T Triode::ffg(T VG) {
     //Calculates
-    //(G.WD-G.PortRes*(gg*_pow(_log(1.0+_exp(cg*VG))/cg,e)+ig0)-VG);
+    return (G.WD-G.PortRes*(gg*_pow(_log(1.0+_exp(cg*VG))/cg,e)+ig0)-VG);
     return G.WD-G.PortRes*(ffg_raw[0]+ffg_raw[1]*VG+ffg_raw[2]*VG*VG+ig0)-VG;
 }
 
