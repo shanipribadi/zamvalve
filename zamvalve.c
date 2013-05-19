@@ -10,13 +10,15 @@
 typedef enum {
 	ZAMVALVE_INPUT = 0,
 	ZAMVALVE_OUTPUT = 1,
-	ZAMVALVE_TUBEDRIVE = 2
+	ZAMVALVE_TUBEDRIVE = 2,
+	ZAMVALVE_TUBETONE = 3
 } PortIndex;
 
 typedef struct {
 	float* input;
 	float* output;
 	float* tubedrive;
+	float* tubetone;
 	float samplerate;
 	void* c;
 } ZAMVALVE;
@@ -50,6 +52,8 @@ connect_port(LV2_Handle instance,
  	 	break;
 		case ZAMVALVE_TUBEDRIVE:
 			zamvalve->tubedrive = (float*)data;
+		case ZAMVALVE_TUBETONE:
+			zamvalve->tubetone = (float*)data;
 		break;
 	}
   
@@ -79,10 +83,11 @@ run(LV2_Handle instance, uint32_t n_samples)
 	float* const output = zamvalve->output;
   
 	float tubedrive = *(zamvalve->tubedrive);
+	float tubetone = *(zamvalve->tubetone);
  
 	for (uint32_t i = 0; i < n_samples; ++i) {
 		/*output[i] = input[i];*/
-		output[i] = tubestage_run(zamvalve->c, input[i], tubedrive);
+		output[i] = tubestage_run(zamvalve->c, input[i], tubedrive, tubetone);
 	}
   
 }
