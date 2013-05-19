@@ -236,26 +236,8 @@ T Triode::fgdash(T VG) {
 
 T Triode::ffp(T VP) {
     return ffp_coeff[0]+ffp_coeff[1]*VP+ffp_coeff[2]*VP*VP;
-    static bool prepared = false;
-    static double coeff[3];
-    if(!prepared) {
-        //go go series expansion
-        const double L2 = log(2.0);
-
-        const double scale = g*pow(L2,gamma-2)/(8.0*pow(c,gamma));
-        coeff[0] = 8.0*L2*L2*scale;
-        coeff[1] = gamma*c*L2*4*scale;
-        coeff[2] = (c*c*gamma*gamma+L2*c*c*gamma-c*c*gamma)*scale;
-        prepared = true;
-    }
-
-    const double A = VP/mu+vg;
-    printf(" %f\n", (P.WD+P.PortRes*(coeff[0]+coeff[1]*A+coeff[2]*A*A+(G.WD-vg)/G.PortRes)-VP));
-    return (P.WD+P.PortRes*(coeff[0]+coeff[1]*A+coeff[2]*A*A+(G.WD-vg)/G.PortRes)-VP);
-
-    printf("%f\n", VP/mu+vg);
-	return (P.WD+P.PortRes*((g*_pow(_log(1.0+_exp(c*(VP/mu+vg)))/c,gamma))+(G.WD-vg)/G.PortRes)-VP);
-}	//	    ^
+	//return (P.WD+P.PortRes*((g*_pow(_log(1.0+_exp(c*(VP/mu+vg)))/c,gamma))+(G.WD-vg)/G.PortRes)-VP);
+}
 
 T Triode::fpdash(T VP) {
         T a1 = exp(c*(vg+VP/mu));
