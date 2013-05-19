@@ -201,18 +201,24 @@ T V::waveUp() {
 
 inline T _exp(const T x)
 {
-    return 1.0 + x + x*x/2.0 + x*x*x/6.0 + x*x*x*x/24.0 + x*x*x*x*x/120.0
-        + x*x*x*x*x*x/720.0 + x*x*x*x*x*x*x/5040.0 + x*x*x*x*x*x*x*x/40320.0;
+    if(x < 10.0 && x > 10.0)
+        return 1.0 + x + x*x/2.0 + x*x*x/6.0 + x*x*x*x/24.0 + x*x*x*x*x/120.0
+            + x*x*x*x*x*x/720.0 + x*x*x*x*x*x*x/5040.0;
+    else
+        return exp(x);
 }
 
 inline T _log(const T x)
 {
-    return log(x);
+    if(x > 10)
+        return log(x);
+    const T a=(x-1)/(x+1);
+    return 2.0*(a+a*a*a/3.0+a*a*a*a*a/5.0+a*a*a*a*a*a*a/7.0+a*a*a*a*a*a*a*a*a/9.0); 
 }
 
 inline T _pow(const T a, const T b)
 {
-    return _exp(b*_log(a));
+    return pow(a,b);
 }
 
 T Triode::ffg(T VG) {
@@ -227,6 +233,25 @@ T Triode::fgdash(T VG) {
 }
 
 T Triode::ffp(T VP) { 
+    static bool prepared = false;
+    static double scale;
+    static double coeff[3];
+    if(!prepared) {
+        //go go series expansion
+        const double L2 = log(2.0);
+
+        const double scale = pow(L2,gamma-2)/(8.0*pow(c,gamma));
+        coeff[0] = 8.0*L2*L2*scale;
+        coeff[1] = gamma*c*L2*4*scale;
+        coeff[2] = (c*c*gamma*gamma+L2*c*c*gamma-c*c*gamma)*scale;
+        coeff[3] = 0.0;
+        prepared = true;
+    }
+
+    double A = VP/mu+vg;
+    return (P.WD+P.PortRes*((g*(coeff[0]+coeff[1]*A+coeff[2]*A*A))+(G.WD-vg)/G.PortRes)-VP);
+
+    printf("%f\n", VP/mu+vg);
 	return (P.WD+P.PortRes*((g*_pow(_log(1.0+_exp(c*(VP/mu+vg)))/c,gamma))+(G.WD-vg)/G.PortRes)-VP);
 }	//	    ^
 
