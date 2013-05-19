@@ -121,6 +121,8 @@ Circuit::Circuit(double rate) :
 	v.e2 = 1.156;
 	v.cg2 = 11.99;
 	v.ig02 = 3.917e-8;
+
+	v.init();
 }
 
 float Circuit::tubestage(float input, float tubedrive, float tubetone) { 

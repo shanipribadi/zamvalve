@@ -94,6 +94,14 @@ public:
 	T r8_sign ( T x );
 	T zeroffp ( T a, T b, T t );
 	T zeroffg ( T a, T b, T t );
+
+    void init(void);
+    void prepare(void);
+
+private:
+    //Taylor series coefficients for fast calculations
+    double ffp_raw[3];
+    double ffp_coeff[3];
 };
 
 class Adaptor : public OnePort {

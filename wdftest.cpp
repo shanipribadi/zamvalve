@@ -88,6 +88,7 @@ int main(){
 	v.e = 1.314;
 	v.cg = 9.901;
 	v.ig0 = 8.025e-8;
+    v.init();
 
 	//DUMP(printf("0j\t  Vi\t  Ro\t  Vg\t  Vk\t  Vp\t  Ri\t  Rk\t  Rg\t  E\t  Co\t  Ck\t  EA\t  RoA\t  Ig\t  Ik\t  Ip\n"));
 	
