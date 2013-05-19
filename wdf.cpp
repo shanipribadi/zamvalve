@@ -213,7 +213,7 @@ inline T _log(const T x)
     if(x > 10)
         return log(x);
     const T a=(x-1)/(x+1);
-    return 2.0*(a+a*a*a/3.0+a*a*a*a*a/5.0+a*a*a*a*a*a*a/7.0+a*a*a*a*a*a*a*a*a/9.0); 
+    return 2.0*(a+a*a*a/3.0+a*a*a*a*a/5.0+a*a*a*a*a*a*a/7.0+a*a*a*a*a*a*a*a*a/9.0);
 }
 
 inline T _pow(const T a, const T b)
@@ -222,7 +222,9 @@ inline T _pow(const T a, const T b)
 }
 
 T Triode::ffg(T VG) {
-        return (G.WD-G.PortRes*(gg*_pow(_log(1.0+_exp(cg*VG))/cg,e)+ig0)-VG);
+    //Calculates
+    //(G.WD-G.PortRes*(gg*_pow(_log(1.0+_exp(cg*VG))/cg,e)+ig0)-VG);
+    return G.WD-G.PortRes*(ffg_raw[0]+ffg_raw[1]*VG+ffg_raw[2]*VG*VG+ig0)-VG;
 }
 
 T Triode::fgdash(T VG) {
@@ -232,7 +234,7 @@ T Triode::fgdash(T VG) {
         return (b1*c1);
 }
 
-T Triode::ffp(T VP) { 
+T Triode::ffp(T VP) {
     return ffp_coeff[0]+ffp_coeff[1]*VP+ffp_coeff[2]*VP*VP;
     static bool prepared = false;
     static double coeff[3];
@@ -670,10 +672,19 @@ void Triode::init(void)
     //go go series expansion
     const double L2 = log(2.0);
 
-    const double scale = g*pow(L2,gamma-2)/(8.0*pow(c,gamma));
-    ffp_raw[0] = 8.0*L2*L2*scale;
-    ffp_raw[1] = gamma*c*L2*4*scale;
-    ffp_raw[2] = (c*c*gamma*gamma+L2*c*c*gamma-c*c*gamma)*scale;
+    {
+        const double scale = g*pow(L2,gamma-2)/(8.0*pow(c,gamma));
+        ffp_raw[0] = 8.0*L2*L2*scale;
+        ffp_raw[1] = gamma*c*L2*4*scale;
+        ffp_raw[2] = (c*c*gamma*gamma+L2*c*c*gamma-c*c*gamma)*scale;
+    }
+
+    {
+        const double scale = gg*pow(L2,e-2)/(8.0*pow(cg,e));
+        ffg_raw[0] = 8.0*L2*L2*scale;
+        ffg_raw[1] = e*cg*L2*4*scale;
+        ffg_raw[2] = (cg*cg*e*e+L2*cg*cg*e-cg*cg*e)*scale;
+    }
 }
 
 void Triode::prepare(void)
