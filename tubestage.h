@@ -1,5 +1,6 @@
 //tubestage.h
 
+#ifdef __cplusplus
 class Circuit {
 public:
 	// Passive components
@@ -37,12 +38,16 @@ public:
 	float tubestage(float input, float tubedrive); 
 	Circuit();
 };
+#endif
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+void* circuit_new(void);
 float tubestage_run(void* circuit, float input, float tubedrive);
+void update_passive(void* circuit, T ci, T ck, T co, T Fs);
+void circuit_del(void* circuit);
 
 #ifdef __cplusplus
 }

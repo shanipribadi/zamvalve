@@ -18,7 +18,7 @@ typedef struct {
 	float* output;
 	float* tubedrive;
 	float samplerate;
-	Circuit c;
+	void* c;
 } ZAMVALVE;
 
 static LV2_Handle
@@ -31,15 +31,13 @@ instantiate(const LV2_Descriptor* descriptor,
 	zamvalve->samplerate = rate;
 	T Fs = rate;
 	
-	Circuit* c = &(zamvalve->c);
+	zamvalve->c = circuit_new();
 
 	// Update passive components with samplerate
 	T ci = 0.0000001;       //100nF
 	T ck = 0.00001;         //10uF
 	T co = 0.00000001;      //10nF
-	c->Ci = C(ci, Fs);
-	c->Ck = C(ck, Fs);
-	c->Co = C(co, Fs);
+	update_passive(zamvalve->c, ci, ck, co, Fs);
 
 	return (LV2_Handle)zamvalve;
 }
@@ -75,12 +73,10 @@ to_dB(float g) {
 	return (20.f*log10(g));
 }
 
-
 static void
 activate(LV2_Handle instance)
 {
 }
-
 
 static void
 run(LV2_Handle instance, uint32_t n_samples)
@@ -91,15 +87,13 @@ run(LV2_Handle instance, uint32_t n_samples)
 	float* const output = zamvalve->output;
   
 	float tubedrive = *(zamvalve->tubedrive);
-	Circuit* c = &(zamvalve->c);
  
 	for (uint32_t i = 0; i < n_samples; ++i) {
 		output[i] = input[i];
-		output[i] = tubestage_run((void*) c, input[i], tubedrive);
+		output[i] = tubestage_run(zamvalve->c, input[i], tubedrive);
 	}
   
 }
-
 
 static void
 deactivate(LV2_Handle instance)
@@ -109,6 +103,10 @@ deactivate(LV2_Handle instance)
 static void
 cleanup(LV2_Handle instance)
 {
+	ZAMVALVE* zamvalve = (ZAMVALVE*)instance;
+	circuit_del(zamvalve->c);
+	zamvalve->c = 0;
+
 	free(instance);
 }
 

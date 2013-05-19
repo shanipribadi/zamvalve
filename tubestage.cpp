@@ -27,8 +27,29 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 extern "C" {
 #endif
 
+void* circuit_new(void)
+{
+    Circuit* c = new Circuit();
+    return static_cast<void *> (c);
+}
+
 float tubestage_run(void* circuit, float input, float tubedrive) {
-	return (((Circuit *)circuit)->tubestage(input, tubedrive));
+    Circuit* c = static_cast<Circuit *> (circuit);
+    //return input;
+    return c->tubestage(input, tubedrive);
+}
+
+void update_passive(void* circuit, T ci, T ck, T co, T Fs) {
+    Circuit* c = static_cast<Circuit *> (circuit);
+    c->Ci = C(ci, Fs);
+    c->Ck = C(ck, Fs);
+    c->Co = C(co, Fs);
+}
+
+void circuit_del(void* circuit)
+{
+    Circuit* c = static_cast<Circuit *> (circuit);
+    delete c;
 }
 
 #ifdef __cplusplus

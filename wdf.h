@@ -46,6 +46,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 typedef double T;
 
+#ifdef __cplusplus
+
 class WDF {
 public:
 	T WD;
@@ -122,5 +124,6 @@ public:
 #include "ser.h"
 #include "par.h"
 
+#endif
 #else
 #endif
