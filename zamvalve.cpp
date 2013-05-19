@@ -124,6 +124,8 @@ public:
 		v.e2 = 1.156;
 		v.cg2 = 11.99;
 		v.ig02 = 3.917e-8;
+
+        v.init();
 	}
 
 	void run(uint32_t nframes) {
