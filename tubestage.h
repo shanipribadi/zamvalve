@@ -36,7 +36,7 @@ public:
 	Triode v;	
 	
 	float tubestage(float input, float tubedrive); 
-	Circuit();
+	Circuit(double rate);
 };
 #endif
 
@@ -44,9 +44,8 @@ public:
 extern "C" {
 #endif
 
-void* circuit_new(void);
+void* circuit_new(double rate);
 float tubestage_run(void* circuit, float input, float tubedrive);
-void update_passive(void* circuit, T ci, T ck, T co, T Fs);
 void circuit_del(void* circuit);
 
 #ifdef __cplusplus

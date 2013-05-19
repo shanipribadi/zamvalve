@@ -21,29 +21,21 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 #include "wdf.h"
 #include "tubestage.h"
 
-#define TOLERANCE 1e-8
+#define TOLERANCE 1e-6
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-void* circuit_new(void)
+void* circuit_new(double rate)
 {
-    Circuit* c = new Circuit();
+    Circuit* c = new Circuit(rate);
     return static_cast<void *> (c);
 }
 
 float tubestage_run(void* circuit, float input, float tubedrive) {
     Circuit* c = static_cast<Circuit *> (circuit);
-    //return input;
     return c->tubestage(input, tubedrive);
-}
-
-void update_passive(void* circuit, T ci, T ck, T co, T Fs) {
-    Circuit* c = static_cast<Circuit *> (circuit);
-    c->Ci = C(ci, Fs);
-    c->Ck = C(ck, Fs);
-    c->Co = C(co, Fs);
 }
 
 void circuit_del(void* circuit)
@@ -56,12 +48,50 @@ void circuit_del(void* circuit)
 }
 #endif
 
-Circuit::Circuit() : 
+Circuit::Circuit(double rate) : 
 		Vi(0.0,10000.0), Ci(0.0000001,48000.0), Ck(0.00001,48000.0), Co(0.00000001,48000.0), Ro(1000000.0), Rg(20000.0), 
 		Ri(1000000.0), Rk(1000.0), E(250.0,100000.0), 
 		S0(&Ci,&Vi), I0(&S0), P0(&I0,&Ri), S1(&Rg,&P0), 
 		I1(&S1), I3(&Ck,&Rk), S2(&Co,&Ro), I4(&S2), P2(&I4,&E) {
 	
+	T Fs = rate;
+	// Passive components
+	T ci = 0.0000001;	//100nF
+	T ck = 0.00001;		//10uF
+	T co = 0.00000001;	//10nF
+	T ro = 1000000.0;	//1Mohm
+	T rp = 100000.0;	//100kohm
+	T rg = 20000.0;		//20kohm
+	T ri = 1000000.0;	//1Mohm
+	T rk = 1000.0;		//1kohm
+	e = 250.0;		//250V
+
+	Vi = V(0.0,10000.0);	//1kohm internal resistance
+	Ci = C(ci, Fs);
+	Ck = C(ck, Fs);
+	Co = C(co, Fs);
+	Ro = R(ro);
+	Rg = R(rg);
+	Ri = R(ri);
+	Rk = R(rk);
+	E = V(e, rp);
+
+	//Official
+	//->Gate
+	S0 = ser(&Ci, &Vi);
+	I0 = inv(&S0);
+	P0 = par(&I0, &Ri);
+	S1 = ser(&Rg, &P0);
+	I1 = inv(&S1);
+
+	//->Cathode
+	I3 = par(&Ck, &Rk);
+
+	//->Plate
+	S2 = ser(&Co, &Ro);
+	I4 = inv(&S2);
+	P2 = par(&I4, &E);
+
 	// 12AX7 triode model RSD-1
 	v.g = 2.242e-3;
 	v.mu = 103.2;
@@ -71,6 +101,26 @@ Circuit::Circuit() :
 	v.e = 1.314;
 	v.cg = 9.901;
 	v.ig0 = 8.025e-8;
+
+	// 12AX7 triode model RSD-1
+	v.g1 = 2.242e-3;
+	v.mu1 = 103.2;
+	v.gamma1 = 1.26;
+	v.c1 = 3.4;
+	v.gg1 = 6.177e-4;
+	v.e1 = 1.314;
+	v.cg1 = 9.901;
+	v.ig01 = 8.025e-8;
+
+	// 12AX7 triode model EHX-1
+	v.g2 = 1.371e-3;
+	v.mu2 = 86.9;
+	v.gamma2 = 1.349;
+	v.c2 = 4.56;
+	v.gg2 = 3.263e-4;
+	v.e2 = 1.156;
+	v.cg2 = 11.99;
+	v.ig02 = 3.917e-8;
 }
 
 
@@ -82,7 +132,6 @@ float Circuit::tubestage(float input, float tubedrive) {
 	Vi.e = tubedrive*input;
 
 	//Step 2: propagate waves up to the triode and push values into triode element
-	//((Class*)v)->foo()
 	I1.waveUp();
 	I3.waveUp();
 	P2.waveUp();
@@ -98,6 +147,7 @@ float Circuit::tubestage(float input, float tubedrive) {
 
 	//Step 3: compute wave reflections inside the triode
 	T vg0, vg1, vp0, vp1;
+	//return input; //test function, v.zeroffg and v.zeroffp hogs all my cpu
 
 	vg0 = -10.0;
 	vg1 = 10.0;
@@ -114,7 +164,7 @@ float Circuit::tubestage(float input, float tubedrive) {
 	v.P.WU = 2.0*v.vp-v.P.WD;
 
 	//Step 4: output 
-	output = (float) Ro.Voltage()/200.0; //Rescale output voltage to be within digital limits
+	output = (float) Ro.Voltage()/e; //Rescale output voltage to be within digital limits
 
 	//Step 5: push new waves down from the triode element
 	P2.setWD(v.P.WU); 
@@ -123,4 +173,3 @@ float Circuit::tubestage(float input, float tubedrive) {
 	
 	return output;
 }
-

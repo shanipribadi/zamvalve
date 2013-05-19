@@ -29,15 +29,7 @@ instantiate(const LV2_Descriptor* descriptor,
 {
 	ZAMVALVE* zamvalve = (ZAMVALVE*)malloc(sizeof(ZAMVALVE));
 	zamvalve->samplerate = rate;
-	T Fs = rate;
-	
-	zamvalve->c = circuit_new();
-
-	// Update passive components with samplerate
-	T ci = 0.0000001;       //100nF
-	T ck = 0.00001;         //10uF
-	T co = 0.00000001;      //10nF
-	update_passive(zamvalve->c, ci, ck, co, Fs);
+	zamvalve->c = circuit_new(rate);
 
 	return (LV2_Handle)zamvalve;
 }
@@ -89,7 +81,7 @@ run(LV2_Handle instance, uint32_t n_samples)
 	float tubedrive = *(zamvalve->tubedrive);
  
 	for (uint32_t i = 0; i < n_samples; ++i) {
-		output[i] = input[i];
+		/*output[i] = input[i];*/
 		output[i] = tubestage_run(zamvalve->c, input[i], tubedrive);
 	}
   
