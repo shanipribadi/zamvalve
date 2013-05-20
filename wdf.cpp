@@ -223,8 +223,10 @@ inline T _pow(const T a, const T b)
 
 T Triode::ffg(T VG) {
     //Calculates
-    //(G.WD-G.PortRes*(gg*_pow(_log(1.0+_exp(cg*VG))/cg,e)+ig0)-VG);
-    return G.WD-G.PortRes*(ffg_raw[0]+ffg_raw[1]*VG+ffg_raw[2]*VG*VG+ig0)-VG;
+    if(VG < -1.0)
+        return G.WD - G.PortRes*ig0 - VG;
+
+    return (G.WD-G.PortRes*(gg*_pow(_log(1.0+_exp(cg*VG))/cg,e)+ig0)-VG);
 }
 
 T Triode::fgdash(T VG) {
@@ -654,19 +656,10 @@ void Triode::init(void)
     //go go series expansion
     const double L2 = log(2.0);
 
-    {
-        const double scale = g*pow(L2,gamma-2)/(8.0*pow(c,gamma));
-        ffp_raw[0] = 8.0*L2*L2*scale;
-        ffp_raw[1] = gamma*c*L2*4*scale;
-        ffp_raw[2] = (c*c*gamma*gamma+L2*c*c*gamma-c*c*gamma)*scale;
-    }
-
-    {
-        const double scale = gg*pow(L2,e-2)/(8.0*pow(cg,e));
-        ffg_raw[0] = 8.0*L2*L2*scale;
-        ffg_raw[1] = e*cg*L2*4*scale;
-        ffg_raw[2] = (cg*cg*e*e+L2*cg*cg*e-cg*cg*e)*scale;
-    }
+    const double scale = g*pow(L2,gamma-2)/(8.0*pow(c,gamma));
+    ffp_raw[0] = 8.0*L2*L2*scale;
+    ffp_raw[1] = gamma*c*L2*4*scale;
+    ffp_raw[2] = (c*c*gamma*gamma+L2*c*c*gamma-c*c*gamma)*scale;
 }
 
 void Triode::prepare(void)

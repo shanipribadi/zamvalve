@@ -53,6 +53,6 @@ lv2:port [
 	lv2:name "Tube Tone";
 	lv2:minimum 0.0 ;
 	lv2:maximum 1.0 ;
-	lv2:default 0.0 ; 
+	lv2:default 0.0 ;
 	ue:unit ue:coef;
 	].

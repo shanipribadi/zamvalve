@@ -102,9 +102,6 @@ private:
     //Taylor series coefficients for fast calculations
     double ffp_raw[3];
     double ffp_coeff[3];
-
-    double ffg_raw[3];
-    double ffg_coeff[3];
 };
 
 class Adaptor : public OnePort {
