@@ -130,15 +130,17 @@ float Circuit::tubestage(float input, float tubedrive, float tubetone) {
 	float output;
 
 	//12AX7 triode tube mod
-	v.g = v.g1 + (v.g2-v.g1)*tubetone;
-	v.mu = v.mu1 + (v.mu2-v.mu1)*tubetone;
-	v.gamma = v.gamma1 + (v.gamma2-v.gamma1)*tubetone;
-	v.c = v.c1 + (v.c2-v.c1)*tubetone;
-	v.gg = v.gg1 + (v.gg2-v.gg1)*tubetone;
-	v.e = v.e1 + (v.e2-v.e1)*tubetone;
-	v.cg = v.cg1 + (v.cg2-v.cg1)*tubetone;
-	v.ig0 = v.ig01 + (v.ig02-v.ig01)*tubetone;
-	v.init();
+	/*
+	 *v.g = v.g1 + (v.g2-v.g1)*tubetone;
+	 *v.mu = v.mu1 + (v.mu2-v.mu1)*tubetone;
+	 *v.gamma = v.gamma1 + (v.gamma2-v.gamma1)*tubetone;
+	 *v.c = v.c1 + (v.c2-v.c1)*tubetone;
+	 *v.gg = v.gg1 + (v.gg2-v.gg1)*tubetone;
+	 *v.e = v.e1 + (v.e2-v.e1)*tubetone;
+	 *v.cg = v.cg1 + (v.cg2-v.cg1)*tubetone;
+	 *v.ig0 = v.ig01 + (v.ig02-v.ig01)*tubetone;
+	 *v.init();
+	 */
 
 	//Step 1: read input sample as voltage for the source
 	Vi.e = tubedrive*input;
